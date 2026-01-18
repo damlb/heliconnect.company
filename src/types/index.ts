@@ -9,6 +9,7 @@ export interface Profile {
   email: string
   first_name: string | null
   last_name: string | null
+  full_name?: string | null
   phone: string | null
   avatar_url: string | null
   role: UserRole
