@@ -24,7 +24,7 @@ export default function Header({ language, onLanguageChange }: HeaderProps) {
 
   const handleSignOut = async () => {
     await signOut()
-    window.location.href = 'https://heliconnect.fr'
+    window.location.href = '/login'
   }
 
   return (
