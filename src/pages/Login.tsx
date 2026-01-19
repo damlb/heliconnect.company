@@ -53,7 +53,7 @@ export default function Login() {
         {/* Logo */}
         <div className="text-center mb-8">
           <img
-            src="/images/logo-icon.svg"
+            src="/images/logo-white.svg"
             alt="HeliConnect"
             className="h-24 w-24 mx-auto mb-4"
           />
