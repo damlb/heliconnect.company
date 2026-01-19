@@ -1,14 +1,13 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
-import { Building2, Mail, Lock, AlertCircle, Loader2 } from 'lucide-react'
+import { Mail, Lock, AlertCircle, Loader2 } from 'lucide-react'
 
 export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
-  const [logoError, setLogoError] = useState(false)
   const { signIn } = useAuth()
   const navigate = useNavigate()
 
@@ -53,23 +52,14 @@ export default function Login() {
       <div className="max-w-md w-full relative z-20">
         {/* Logo */}
         <div className="text-center mb-8">
-          {!logoError ? (
-            <img
-              src="/images/logo-white.svg"
-              alt="HeliConnect"
-              className="h-48 mx-auto mb-4"
-              onError={() => setLogoError(true)}
-            />
-          ) : (
-            <>
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-[#D4AF64] to-[#C99846] rounded-full mb-4 shadow-lg">
-                <Building2 className="w-8 h-8 text-[#0B1D51]" />
-              </div>
-              <h1 className="text-4xl font-bold text-white mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                HeliConnect
-              </h1>
-            </>
-          )}
+          <img
+            src="/images/logo-icon.svg"
+            alt="HeliConnect"
+            className="h-24 w-24 mx-auto mb-4"
+          />
+          <h1 className="text-3xl font-bold text-white mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+            HeliConnect
+          </h1>
           <p className="text-[#D4AF64]">
             Espace Compagnies - Gérez vos vols
           </p>
