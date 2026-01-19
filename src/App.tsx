@@ -89,8 +89,8 @@ function AppRoutes() {
         <Route path="settings" element={<ComingSoon title="Paramètres" />} />
       </Route>
 
-      {/* Catch all */}
-      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      {/* Catch all - redirect to login (ProtectedRoute will handle redirect if authenticated) */}
+      <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   )
 }
