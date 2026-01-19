@@ -35,11 +35,11 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
 // Public route wrapper (redirects to dashboard if authenticated)
 function PublicRoute({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, isLoading, hasCompanyAccess } = useAuth()
+  const { isAuthenticated, isLoading, hasCompanyAccess, profile } = useAuth()
 
   // Ne pas attendre le loading pour afficher la page login
-  // Si l'utilisateur est déjà authentifié, on le redirige
-  if (!isLoading && isAuthenticated && hasCompanyAccess) {
+  // Mais attendre que le profile soit chargé avant de rediriger
+  if (!isLoading && isAuthenticated && profile && hasCompanyAccess) {
     return <Navigate to="/dashboard" replace />
   }
 

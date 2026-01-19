@@ -155,7 +155,7 @@ export default function Login() {
 
         {/* Footer */}
         <p className="text-center text-blue-200/80 text-sm mt-6">
-          © 2024 HeliConnect. Tous droits réservés.
+          © {new Date().getFullYear()} HeliConnect. Tous droits réservés.
         </p>
       </div>
     </div>
