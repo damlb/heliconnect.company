@@ -113,10 +113,14 @@ export default function JoinInvitation() {
         return
       }
 
+      // Supabase returns arrays for joined relations, extract first element
+      const companyData = Array.isArray(data.company) ? data.company[0] : data.company
+      const invitedByData = Array.isArray(data.invitedBy) ? data.invitedBy[0] : data.invitedBy
+
       setInvitation({
         ...data,
-        company: data.company as InvitationData['company'],
-        invitedBy: data.invitedBy as InvitationData['invitedBy'],
+        company: companyData as InvitationData['company'],
+        invitedBy: invitedByData as InvitationData['invitedBy'],
       })
     } catch (err) {
       console.error('Error validating token:', err)
