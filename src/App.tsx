@@ -4,6 +4,8 @@ import { AppLayout } from '@/components/layout'
 import Login from '@/pages/Login'
 import Dashboard from '@/pages/Dashboard'
 import Flights from '@/pages/Flights'
+import Team from '@/pages/Team'
+import JoinInvitation from '@/pages/JoinInvitation'
 import './index.css'
 
 // Protected route wrapper
@@ -62,6 +64,7 @@ function AppRoutes() {
           </PublicRoute>
         }
       />
+      <Route path="/join" element={<JoinInvitation />} />
 
       {/* Protected routes */}
       <Route
@@ -81,6 +84,7 @@ function AppRoutes() {
         <Route path="fleet" element={<ComingSoon title="Ma flotte" />} />
         <Route path="statistics" element={<ComingSoon title="Statistiques" />} />
         <Route path="documents" element={<ComingSoon title="Documents" />} />
+        <Route path="team" element={<Team language="fr" />} />
         <Route path="support" element={<ComingSoon title="Support" />} />
         <Route path="settings" element={<ComingSoon title="Paramètres" />} />
       </Route>

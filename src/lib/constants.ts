@@ -52,6 +52,13 @@ export const SIDEBAR_ITEMS = [
     path: '/documents',
   },
   {
+    id: 'team',
+    label: 'Équipe',
+    labelEn: 'Team',
+    icon: 'Users',
+    path: '/team',
+  },
+  {
     id: 'support',
     label: 'Support',
     labelEn: 'Support',

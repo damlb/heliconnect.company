@@ -90,6 +90,31 @@ export default function Header({ language, onLanguageChange }: HeaderProps) {
           </DropdownMenuContent>
         </DropdownMenu>
 
+        {/* Company info */}
+        <div className="hidden lg:flex items-center gap-3 px-3 py-1.5 rounded-lg bg-gray-50 border border-gray-200">
+          {company?.logo_url ? (
+            <img
+              src={company.logo_url}
+              alt={company.name}
+              className="h-8 w-8 rounded object-contain"
+            />
+          ) : (
+            <div className="h-8 w-8 rounded bg-primary/10 flex items-center justify-center">
+              <span className="text-primary font-bold text-sm">
+                {company?.name?.charAt(0) || 'C'}
+              </span>
+            </div>
+          )}
+          <div className="text-left">
+            <p className="text-sm font-semibold text-gray-900 font-poppins">
+              {company?.name || 'Compagnie'}
+            </p>
+            <p className="text-xs text-gray-500">
+              {language === 'fr' ? 'Espace compagnie' : 'Company space'}
+            </p>
+          </div>
+        </div>
+
         {/* User menu */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -105,7 +130,7 @@ export default function Header({ language, onLanguageChange }: HeaderProps) {
                   {profile?.full_name || 'Utilisateur'}
                 </p>
                 <p className="text-xs text-gray-500">
-                  {company?.name || 'Compagnie'}
+                  {profile?.email}
                 </p>
               </div>
             </Button>
