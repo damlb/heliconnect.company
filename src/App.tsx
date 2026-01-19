@@ -37,15 +37,9 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 function PublicRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading, hasCompanyAccess } = useAuth()
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    )
-  }
-
-  if (isAuthenticated && hasCompanyAccess) {
+  // Ne pas attendre le loading pour afficher la page login
+  // Si l'utilisateur est déjà authentifié, on le redirige
+  if (!isLoading && isAuthenticated && hasCompanyAccess) {
     return <Navigate to="/dashboard" replace />
   }
 

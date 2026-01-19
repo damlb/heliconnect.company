@@ -70,13 +70,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let mounted = true
 
-    // Timeout de sécurité - si getSession ne répond pas en 5s, on arrête le loading
+    // Timeout de sécurité - si getSession ne répond pas en 3s, on arrête le loading
     const timeout = setTimeout(() => {
       if (mounted && isLoading) {
         console.log('Auth: Timeout - forcing isLoading to false')
         setIsLoading(false)
       }
-    }, 5000)
+    }, 3000)
 
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
