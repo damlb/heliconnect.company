@@ -5,7 +5,14 @@ import UpdateBanner from '@/components/UpdateBanner'
 import Login from '@/pages/Login'
 import Dashboard from '@/pages/Dashboard'
 import Flights from '@/pages/Flights'
+import Marketplace from '@/pages/Marketplace'
+import Bookings from '@/pages/Bookings'
+import Fleet from '@/pages/Fleet'
+import Statistics from '@/pages/Statistics'
+import Documents from '@/pages/Documents'
 import Team from '@/pages/Team'
+import Support from '@/pages/Support'
+import Settings from '@/pages/Settings'
 import JoinInvitation from '@/pages/JoinInvitation'
 import './index.css'
 
@@ -87,32 +94,19 @@ function AppRoutes() {
         <Route index element={<Navigate to="/dashboard" replace />} />
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="flights" element={<Flights />} />
-        {/* TODO: Add more routes */}
-        <Route path="marketplace" element={<ComingSoon title="Marketplace" />} />
-        <Route path="bookings" element={<ComingSoon title="Réservations" />} />
-        <Route path="fleet" element={<ComingSoon title="Ma flotte" />} />
-        <Route path="statistics" element={<ComingSoon title="Statistiques" />} />
-        <Route path="documents" element={<ComingSoon title="Documents" />} />
+        <Route path="marketplace" element={<Marketplace />} />
+        <Route path="bookings" element={<Bookings />} />
+        <Route path="fleet" element={<Fleet />} />
+        <Route path="statistics" element={<Statistics />} />
+        <Route path="documents" element={<Documents />} />
         <Route path="team" element={<Team language="fr" />} />
-        <Route path="support" element={<ComingSoon title="Support" />} />
-        <Route path="settings" element={<ComingSoon title="Paramètres" />} />
+        <Route path="support" element={<Support />} />
+        <Route path="settings" element={<Settings />} />
       </Route>
 
       {/* Catch all - redirect to login (ProtectedRoute will handle redirect if authenticated) */}
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
-  )
-}
-
-// Placeholder component for pages not yet implemented
-function ComingSoon({ title }: { title: string }) {
-  return (
-    <div className="flex flex-col items-center justify-center h-64">
-      <h1 className="text-2xl font-display font-semibold text-gray-900 mb-2">
-        {title}
-      </h1>
-      <p className="text-gray-500">Cette page est en cours de développement</p>
-    </div>
   )
 }
 
