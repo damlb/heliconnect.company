@@ -474,7 +474,7 @@ export default function Team({ language }: TeamProps) {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6">
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900 font-poppins">{t.title}</h1>
@@ -733,28 +733,28 @@ export default function Team({ language }: TeamProps) {
                   {members.map((member) => (
                     <div
                       key={member.id}
-                      className="flex items-center justify-between p-3 rounded-lg border bg-white hover:bg-gray-50 transition-colors"
+                      className="flex items-center justify-between p-3 rounded-lg border bg-white hover:bg-gray-50 transition-colors gap-2"
                     >
-                      <div className="flex items-center gap-3">
-                        <Avatar className="h-10 w-10">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <Avatar className="h-10 w-10 flex-shrink-0">
                           <AvatarImage src={member.avatar_url || undefined} />
                           <AvatarFallback className="bg-primary text-white text-sm">
                             {getInitials(member.full_name)}
                           </AvatarFallback>
                         </Avatar>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <p className="font-medium text-gray-900">{member.full_name}</p>
+                        <div className="min-w-0">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <p className="font-medium text-gray-900 truncate">{member.full_name}</p>
                             {getRoleBadge(member.role_in_company)}
                           </div>
-                          <p className="text-sm text-gray-500">{member.email}</p>
+                          <p className="text-sm text-gray-500 truncate">{member.email}</p>
                         </div>
                       </div>
 
                       {member.role_in_company !== 'owner' && (
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon">
+                            <Button variant="ghost" size="icon" className="flex-shrink-0">
                               <MoreVertical className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
@@ -797,20 +797,20 @@ export default function Team({ language }: TeamProps) {
                   {invitations.map((invitation) => (
                     <div
                       key={invitation.id}
-                      className="flex items-center justify-between p-3 rounded-lg border bg-amber-50 border-amber-200"
+                      className="flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-lg border bg-amber-50 border-amber-200 gap-3"
                     >
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-100">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-100 flex-shrink-0">
                           <Clock className="h-5 w-5 text-amber-600" />
                         </div>
-                        <div>
-                          <p className="font-medium text-gray-900">{invitation.email}</p>
+                        <div className="min-w-0">
+                          <p className="font-medium text-gray-900 truncate">{invitation.email}</p>
                           <p className="text-sm text-gray-500">
                             {t.expiresAt} {formatDate(invitation.expires_at)}
                           </p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-shrink-0 ml-auto sm:ml-0">
                         {getRoleBadge(invitation.role)}
                         <Button
                           variant="ghost"
@@ -818,8 +818,8 @@ export default function Team({ language }: TeamProps) {
                           className="text-red-600"
                           onClick={() => handleCancelInvitation(invitation.id)}
                         >
-                          <XCircle className="mr-1 h-4 w-4" />
-                          {t.cancelInvitation}
+                          <XCircle className="h-4 w-4 sm:mr-1" />
+                          <span className="hidden sm:inline">{t.cancelInvitation}</span>
                         </Button>
                       </div>
                     </div>

@@ -268,7 +268,7 @@ export default function FlightModal({
           </div>
 
           {/* Cities */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>{t.departureCity} *</Label>
               <Input
@@ -300,7 +300,7 @@ export default function FlightModal({
           </div>
 
           {/* Date and duration */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>{t.departureDate} *</Label>
               <Input
@@ -326,7 +326,7 @@ export default function FlightModal({
           </div>
 
           {/* Seats and pricing */}
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="space-y-2">
               <Label>{t.seats} *</Label>
               <Input

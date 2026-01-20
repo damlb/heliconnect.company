@@ -38,9 +38,9 @@ export default function Header({ language, onLanguageChange, isMobile, onMenuCli
         </Button>
       )}
 
-      {/* Search */}
-      <div className="flex-1 max-w-md">
-        <div className="relative">
+      {/* Search - hidden on mobile */}
+      <div className="hidden md:flex flex-1 max-w-md">
+        <div className="relative w-full">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
           <Input
             type="search"
@@ -50,8 +50,11 @@ export default function Header({ language, onLanguageChange, isMobile, onMenuCli
         </div>
       </div>
 
+      {/* Spacer on mobile */}
+      <div className="flex-1 md:hidden" />
+
       {/* Right side */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2 md:gap-4">
         {/* Language switcher */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
