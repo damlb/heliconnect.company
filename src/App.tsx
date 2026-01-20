@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from '@/hooks/useAuth'
 import { AppLayout } from '@/components/layout'
+import UpdateBanner from '@/components/UpdateBanner'
 import Login from '@/pages/Login'
 import Dashboard from '@/pages/Dashboard'
 import Flights from '@/pages/Flights'
@@ -105,6 +106,7 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
+        <UpdateBanner />
         <AppRoutes />
       </AuthProvider>
     </BrowserRouter>
