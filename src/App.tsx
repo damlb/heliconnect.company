@@ -9,22 +9,36 @@ import Team from '@/pages/Team'
 import JoinInvitation from '@/pages/JoinInvitation'
 import './index.css'
 
+// Loading spinner component
+function LoadingSpinner() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+    </div>
+  )
+}
+
 // Protected route wrapper
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, isLoading, hasCompanyAccess } = useAuth()
+  const { isAuthenticated, isLoading, hasCompanyAccess, profile, user } = useAuth()
 
+  // Toujours attendre que le chargement soit terminé
   if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    )
+    return <LoadingSpinner />
   }
 
+  // Si pas authentifié, rediriger vers login
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />
   }
 
+  // Si authentifié mais profil pas encore chargé, attendre
+  // C'est crucial pour éviter la redirection avant que le rôle soit vérifié
+  if (user && !profile) {
+    return <LoadingSpinner />
+  }
+
+  // Si profil chargé mais pas accès company, rediriger
   if (!hasCompanyAccess) {
     // Redirect non-company users to the main site
     window.location.href = 'https://heliconnect.fr'

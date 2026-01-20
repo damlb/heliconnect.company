@@ -48,22 +48,31 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
 interface SidebarProps {
   language: 'fr' | 'en'
   isCollapsed: boolean
+  isMobile: boolean
+  isMobileSidebarOpen: boolean
   onToggle: () => void
+  onClose: () => void
 }
 
-export default function Sidebar({ language, isCollapsed, onToggle }: SidebarProps) {
+export default function Sidebar({ language, isCollapsed, isMobile, isMobileSidebarOpen, onToggle, onClose }: SidebarProps) {
   const location = useLocation()
 
-  return (
-    <aside
-      className={cn(
+  // On mobile, hide sidebar by default and show as overlay when open
+  const sidebarClasses = isMobile
+    ? cn(
+        'fixed left-0 top-0 z-40 h-screen bg-white border-r border-gray-200 transition-transform duration-300 w-64',
+        isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+      )
+    : cn(
         'fixed left-0 top-0 z-40 h-screen bg-white border-r border-gray-200 transition-all duration-300',
         isCollapsed ? 'w-16' : 'w-64'
-      )}
-    >
+      )
+
+  return (
+    <aside className={sidebarClasses}>
       {/* Logo */}
       <div className="flex h-16 items-center justify-between px-4 border-b border-gray-200">
-        {!isCollapsed && (
+        {(isMobile || !isCollapsed) && (
           <div className="flex items-center gap-2">
             <img
               src="/images/logo-icon.svg"
@@ -75,23 +84,32 @@ export default function Sidebar({ language, isCollapsed, onToggle }: SidebarProp
             </span>
           </div>
         )}
-        {isCollapsed && (
+        {!isMobile && isCollapsed && (
           <img
             src="/images/logo-icon.svg"
             alt="HeliConnect"
             className="h-8 w-8 mx-auto"
           />
         )}
-        <button
-          onClick={onToggle}
-          className="p-1.5 rounded-md hover:bg-gray-100 transition-colors"
-        >
-          {isCollapsed ? (
-            <ChevronRight className="h-5 w-5 text-gray-500" />
-          ) : (
+        {isMobile ? (
+          <button
+            onClick={onClose}
+            className="p-1.5 rounded-md hover:bg-gray-100 transition-colors"
+          >
             <ChevronLeft className="h-5 w-5 text-gray-500" />
-          )}
-        </button>
+          </button>
+        ) : (
+          <button
+            onClick={onToggle}
+            className="p-1.5 rounded-md hover:bg-gray-100 transition-colors"
+          >
+            {isCollapsed ? (
+              <ChevronRight className="h-5 w-5 text-gray-500" />
+            ) : (
+              <ChevronLeft className="h-5 w-5 text-gray-500" />
+            )}
+          </button>
+        )}
       </div>
 
       {/* Navigation */}
@@ -106,17 +124,18 @@ export default function Sidebar({ language, isCollapsed, onToggle }: SidebarProp
               <li key={item.id}>
                 <NavLink
                   to={item.path}
+                  onClick={() => isMobile && onClose()}
                   className={cn(
                     'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200',
                     isActive
                       ? 'bg-primary text-white'
                       : 'text-gray-600 hover:bg-gray-100 hover:text-primary',
-                    isCollapsed && 'justify-center px-2'
+                    !isMobile && isCollapsed && 'justify-center px-2'
                   )}
-                  title={isCollapsed ? label : undefined}
+                  title={!isMobile && isCollapsed ? label : undefined}
                 >
                   {Icon && <Icon className="h-5 w-5 flex-shrink-0" />}
-                  {!isCollapsed && (
+                  {(isMobile || !isCollapsed) && (
                     <span className="text-sm font-medium">{label}</span>
                   )}
                 </NavLink>

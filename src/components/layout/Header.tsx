@@ -1,4 +1,4 @@
-import { Bell, Search, User, LogOut, Settings, Globe } from 'lucide-react'
+import { Bell, Search, User, LogOut, Settings, Globe, Menu } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
@@ -17,9 +17,11 @@ import { getInitials } from '@/lib/utils'
 interface HeaderProps {
   language: 'fr' | 'en'
   onLanguageChange: (lang: 'fr' | 'en') => void
+  isMobile?: boolean
+  onMenuClick?: () => void
 }
 
-export default function Header({ language, onLanguageChange }: HeaderProps) {
+export default function Header({ language, onLanguageChange, isMobile, onMenuClick }: HeaderProps) {
   const { profile, company, signOut } = useAuth()
 
   const handleSignOut = async () => {
@@ -28,7 +30,14 @@ export default function Header({ language, onLanguageChange }: HeaderProps) {
   }
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-white px-6">
+    <header className="sticky top-0 z-30 flex h-16 items-center gap-2 md:gap-4 border-b bg-white px-4 md:px-6">
+      {/* Mobile menu button */}
+      {isMobile && (
+        <Button variant="ghost" size="icon" onClick={onMenuClick}>
+          <Menu className="h-5 w-5 text-gray-600" />
+        </Button>
+      )}
+
       {/* Search */}
       <div className="flex-1 max-w-md">
         <div className="relative">
