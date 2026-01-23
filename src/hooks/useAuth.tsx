@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react'
 import type { User, Session } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
 import type { Profile, Company, CompanyMember } from '@/types'
@@ -26,9 +26,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [company, setCompany] = useState<Company | null>(null)
   const [companyMember, setCompanyMember] = useState<CompanyMember | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [isInitialized, setIsInitialized] = useState(false)
 
   // Fetch user profile and company data
-  const fetchUserData = async (userId: string) => {
+  const fetchUserData = useCallback(async (userId: string): Promise<boolean> => {
     try {
       // Fetch profile
       const { data: profileData, error: profileError } = await supabase
@@ -37,12 +38,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .eq('id', userId)
         .single()
 
-      if (profileError) throw profileError
+      if (profileError) {
+        console.error('Error fetching profile:', profileError)
+        return false
+      }
+
       setProfile(profileData)
 
       // If user is a company user, fetch company data
       if (profileData?.role === 'company' || profileData?.role === 'superadmin') {
-        // Fetch company membership
         const { data: memberData, error: memberError } = await supabase
           .from('company_members')
           .select('*, companies(*)')
@@ -54,119 +58,101 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setCompany(memberData.companies as Company)
         }
       }
+
+      return true
     } catch (error) {
       console.error('Error fetching user data:', error)
+      return false
     }
-  }
+  }, [])
 
-  // Refresh profile data
-  const refreshProfile = async () => {
-    if (user) {
-      await fetchUserData(user.id)
+  // Clear all auth state
+  const clearAuthState = useCallback(() => {
+    setUser(null)
+    setSession(null)
+    setProfile(null)
+    setCompany(null)
+    setCompanyMember(null)
+  }, [])
+
+  // Handle session change (unified handler for all auth events)
+  const handleSession = useCallback(async (newSession: Session | null) => {
+    if (newSession?.user) {
+      setSession(newSession)
+      setUser(newSession.user)
+      await fetchUserData(newSession.user.id)
+    } else {
+      clearAuthState()
     }
-  }
+    setIsLoading(false)
+    setIsInitialized(true)
+  }, [fetchUserData, clearAuthState])
 
-  // Initialize auth state
+  // Initialize auth - use onAuthStateChange as the single source of truth
   useEffect(() => {
-    let mounted = true
-
-    // Vérifier d'abord si on a un token en localStorage (session persistée)
-    const hasStoredSession = () => {
-      try {
-        const stored = localStorage.getItem('heliconnect-company-auth')
-        return stored && JSON.parse(stored)?.access_token
-      } catch {
-        return false
-      }
-    }
-
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!mounted) return
-      console.log('Auth: getSession completed', session ? 'with session' : 'no session')
-      setSession(session)
-      setUser(session?.user ?? null)
-      if (session?.user) {
-        fetchUserData(session.user.id).finally(() => {
-          if (mounted) setIsLoading(false)
-        })
-      } else {
-        setIsLoading(false)
-      }
-    }).catch((err) => {
-      console.error('Auth: getSession error', err)
-      // Si on a un token stocké mais getSession échoue, on réessaye
-      if (hasStoredSession()) {
-        console.log('Auth: Retrying with stored session...')
-        supabase.auth.refreshSession().then(({ data: { session } }) => {
-          if (!mounted) return
-          if (session?.user) {
-            setSession(session)
-            setUser(session.user)
-            fetchUserData(session.user.id).finally(() => {
-              if (mounted) setIsLoading(false)
-            })
-          } else {
-            setIsLoading(false)
-          }
-        }).catch(() => {
-          if (mounted) setIsLoading(false)
-        })
-      } else {
-        if (mounted) setIsLoading(false)
-      }
-    })
-
-    // Listen for auth changes
+    // Subscribe to auth changes FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (!mounted) return
-        console.log('Auth: onAuthStateChange', event)
-        setSession(session)
-        setUser(session?.user ?? null)
+      async (event, newSession) => {
+        // INITIAL_SESSION is fired on page load with the current session
+        // SIGNED_IN is fired after successful login
+        // SIGNED_OUT is fired after logout
+        // TOKEN_REFRESHED is fired when token is refreshed
 
-        if (event === 'SIGNED_IN' && session?.user) {
-          await fetchUserData(session.user.id)
-        } else if (event === 'SIGNED_OUT') {
-          setProfile(null)
-          setCompany(null)
-          setCompanyMember(null)
+        if (event === 'SIGNED_OUT') {
+          clearAuthState()
+          setIsLoading(false)
+          setIsInitialized(true)
+        } else if (newSession) {
+          // For all other events with a session, update state
+          await handleSession(newSession)
+        } else if (event === 'INITIAL_SESSION') {
+          // No session on initial load = not authenticated
+          setIsLoading(false)
+          setIsInitialized(true)
         }
-        setIsLoading(false)
       }
     )
 
     return () => {
-      mounted = false
       subscription.unsubscribe()
     }
-  }, [])
+  }, [handleSession, clearAuthState])
+
+  // Refresh profile data
+  const refreshProfile = useCallback(async () => {
+    if (user) {
+      await fetchUserData(user.id)
+    }
+  }, [user, fetchUserData])
 
   // Sign in
-  const signIn = async (email: string, password: string) => {
+  const signIn = useCallback(async (email: string, password: string) => {
     try {
+      setIsLoading(true)
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       })
 
       if (error) {
+        setIsLoading(false)
         return { error: error.message }
       }
 
+      // onAuthStateChange will handle the rest
       return { error: null }
     } catch (error) {
+      setIsLoading(false)
       return { error: 'Une erreur est survenue' }
     }
-  }
+  }, [])
 
   // Sign out
-  const signOut = async () => {
+  const signOut = useCallback(async () => {
+    setIsLoading(true)
     await supabase.auth.signOut()
-    setProfile(null)
-    setCompany(null)
-    setCompanyMember(null)
-  }
+    // onAuthStateChange will handle clearing the state
+  }, [])
 
   const value: AuthContextType = {
     user,
@@ -175,7 +161,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     company,
     companyMember,
     isLoading,
-    isAuthenticated: !!user && !!profile,
+    isAuthenticated: isInitialized && !!user && !!profile,
     hasCompanyAccess: profile?.role === 'company' || profile?.role === 'superadmin',
     signIn,
     signOut,

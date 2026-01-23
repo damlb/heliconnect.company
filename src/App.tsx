@@ -25,48 +25,45 @@ function LoadingSpinner() {
   )
 }
 
-// Protected route wrapper
+// Protected route - requires authentication and company access
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading, hasCompanyAccess, profile, user } = useAuth()
 
-  // Toujours attendre que le chargement soit terminé
+  // Always show spinner while loading
   if (isLoading) {
     return <LoadingSpinner />
   }
 
-  // Si pas authentifié, rediriger vers login
+  // Not authenticated -> login
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />
   }
 
-  // Si authentifié mais profil pas encore chargé, attendre
-  // C'est crucial pour éviter la redirection avant que le rôle soit vérifié
+  // Authenticated but waiting for profile
   if (user && !profile) {
     return <LoadingSpinner />
   }
 
-  // Si profil chargé mais pas accès company, rediriger
+  // Authenticated but no company access -> redirect to main site
   if (!hasCompanyAccess) {
-    // Redirect non-company users to the main site
     window.location.href = 'https://heliconnect.fr'
-    return null
+    return <LoadingSpinner />
   }
 
   return <>{children}</>
 }
 
-// Public route wrapper (redirects to dashboard if authenticated)
+// Public route - redirects to dashboard if already authenticated
 function PublicRoute({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, isLoading, hasCompanyAccess, profile } = useAuth()
+  const { isAuthenticated, isLoading, hasCompanyAccess } = useAuth()
 
-  // Attendre que le chargement soit terminé avant d'afficher quoi que ce soit
-  // Cela évite de montrer la page login pendant que la session est restaurée (HMR)
+  // Show spinner while checking auth
   if (isLoading) {
     return <LoadingSpinner />
   }
 
-  // Si authentifié avec accès company, rediriger vers le dashboard
-  if (isAuthenticated && profile && hasCompanyAccess) {
+  // Already authenticated with company access -> dashboard
+  if (isAuthenticated && hasCompanyAccess) {
     return <Navigate to="/dashboard" replace />
   }
 
@@ -109,7 +106,7 @@ function AppRoutes() {
         <Route path="settings" element={<Settings />} />
       </Route>
 
-      {/* Catch all - redirect to login (ProtectedRoute will handle redirect if authenticated) */}
+      {/* Catch all */}
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   )
