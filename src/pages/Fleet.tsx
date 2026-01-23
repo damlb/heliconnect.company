@@ -146,6 +146,8 @@ export default function Fleet() {
   useEffect(() => {
     if (company?.id) {
       fetchHelicopters()
+    } else {
+      setIsLoading(false)
     }
   }, [company?.id])
 

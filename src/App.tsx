@@ -59,9 +59,14 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 function PublicRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading, hasCompanyAccess, profile } = useAuth()
 
-  // Ne pas attendre le loading pour afficher la page login
-  // Mais attendre que le profile soit chargé avant de rediriger
-  if (!isLoading && isAuthenticated && profile && hasCompanyAccess) {
+  // Attendre que le chargement soit terminé avant d'afficher quoi que ce soit
+  // Cela évite de montrer la page login pendant que la session est restaurée (HMR)
+  if (isLoading) {
+    return <LoadingSpinner />
+  }
+
+  // Si authentifié avec accès company, rediriger vers le dashboard
+  if (isAuthenticated && profile && hasCompanyAccess) {
     return <Navigate to="/dashboard" replace />
   }
 

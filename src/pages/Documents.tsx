@@ -153,6 +153,8 @@ export default function Documents() {
   useEffect(() => {
     if (company?.id) {
       fetchDocuments()
+    } else {
+      setIsLoading(false)
     }
   }, [company?.id])
 

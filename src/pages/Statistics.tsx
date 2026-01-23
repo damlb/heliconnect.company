@@ -99,6 +99,8 @@ export default function Statistics() {
   useEffect(() => {
     if (company?.id) {
       fetchStatistics()
+    } else {
+      setIsLoading(false)
     }
   }, [company?.id, period])
 

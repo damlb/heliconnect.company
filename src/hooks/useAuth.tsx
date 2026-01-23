@@ -70,18 +70,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let mounted = true
 
-    // Timeout de sécurité - si getSession ne répond pas en 3s, on arrête le loading
-    const timeout = setTimeout(() => {
-      if (mounted && isLoading) {
-        console.log('Auth: Timeout - forcing isLoading to false')
-        setIsLoading(false)
+    // Vérifier d'abord si on a un token en localStorage (session persistée)
+    const hasStoredSession = () => {
+      try {
+        const stored = localStorage.getItem('heliconnect-company-auth')
+        return stored && JSON.parse(stored)?.access_token
+      } catch {
+        return false
       }
-    }, 3000)
+    }
 
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!mounted) return
-      clearTimeout(timeout)
+      console.log('Auth: getSession completed', session ? 'with session' : 'no session')
       setSession(session)
       setUser(session?.user ?? null)
       if (session?.user) {
@@ -93,13 +95,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     }).catch((err) => {
       console.error('Auth: getSession error', err)
-      if (mounted) setIsLoading(false)
+      // Si on a un token stocké mais getSession échoue, on réessaye
+      if (hasStoredSession()) {
+        console.log('Auth: Retrying with stored session...')
+        supabase.auth.refreshSession().then(({ data: { session } }) => {
+          if (!mounted) return
+          if (session?.user) {
+            setSession(session)
+            setUser(session.user)
+            fetchUserData(session.user.id).finally(() => {
+              if (mounted) setIsLoading(false)
+            })
+          } else {
+            setIsLoading(false)
+          }
+        }).catch(() => {
+          if (mounted) setIsLoading(false)
+        })
+      } else {
+        if (mounted) setIsLoading(false)
+      }
     })
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         if (!mounted) return
+        console.log('Auth: onAuthStateChange', event)
         setSession(session)
         setUser(session?.user ?? null)
 
@@ -116,7 +138,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     return () => {
       mounted = false
-      clearTimeout(timeout)
       subscription.unsubscribe()
     }
   }, [])

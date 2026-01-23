@@ -148,6 +148,8 @@ export default function Bookings() {
   useEffect(() => {
     if (company?.id) {
       fetchBookings()
+    } else {
+      setIsLoading(false)
     }
   }, [company?.id])
 

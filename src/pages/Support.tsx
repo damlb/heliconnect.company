@@ -174,6 +174,8 @@ export default function Support() {
   useEffect(() => {
     if (company?.id) {
       fetchTickets()
+    } else {
+      setIsLoading(false)
     }
   }, [company?.id])
 

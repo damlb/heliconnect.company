@@ -205,6 +205,8 @@ export default function Marketplace() {
   useEffect(() => {
     if (company?.id) {
       fetchMarketplaceData()
+    } else {
+      setIsLoading(false)
     }
   }, [company?.id, activeTab])
 

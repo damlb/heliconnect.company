@@ -248,6 +248,8 @@ export default function Team({ language }: TeamProps) {
   useEffect(() => {
     if (company?.id) {
       fetchTeamData()
+    } else {
+      setIsLoading(false)
     }
   }, [company?.id])
 

@@ -44,6 +44,8 @@ export default function Dashboard() {
   useEffect(() => {
     if (company?.id) {
       fetchDashboardData()
+    } else {
+      setIsLoading(false)
     }
   }, [company?.id])
 

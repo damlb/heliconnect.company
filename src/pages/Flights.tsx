@@ -57,6 +57,8 @@ export default function Flights() {
   useEffect(() => {
     if (company?.id) {
       fetchFlights()
+    } else {
+      setIsLoading(false)
     }
   }, [company?.id])
 
